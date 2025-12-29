@@ -1,0 +1,50 @@
+name: Flutter Android APK Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Java (Android build requires Java 11)
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      # 3️⃣ Setup Flutter SDK
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.16.0"
+          cache: true
+
+      # 4️⃣ Flutter dependencies
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 5️⃣ Analyze (optional but good)
+      - name: Analyze project
+        run: flutter analyze
+        continue-on-error: true
+
+      # 6️⃣ Build Debug APK (faster, no signing issues)
+      - name: Build Debug APK
+        run: flutter build apk --debug
+
+      # 7️⃣ Upload APK as artifact
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: itemrdc-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk

@@ -26,8 +26,8 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.16.0"
-          cache: true
+          flutter-version: "3.38.5"
+          cache: false 
 
       # 4️⃣ Clean Flutter project to remove old build artifacts
       - name: Clean Flutter project

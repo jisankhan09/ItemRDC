@@ -20,39 +20,34 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'  # এখানে তোমার লোকাল পরিবর্তন ব্যবহার
+          java-version: '17'
 
       # 3️⃣ Setup Flutter SDK
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.38.5"
-          cache: false 
+          cache: false
 
-      # 4️⃣ Clean Flutter project to remove old build artifacts
-      - name: Clean Flutter project
-        run: flutter clean
-        working-directory: ./
-
-      # 5️⃣ Flutter dependencies
+      # 4️⃣ Flutter dependencies
       - name: Install dependencies
         run: flutter pub get
         working-directory: ./
 
-      # 6️⃣ Analyze project (optional but recommended)
+      # 5️⃣ Analyze project (optional but recommended)
       - name: Analyze project
         run: flutter analyze
         working-directory: ./
         continue-on-error: true
 
-      # 7️⃣ Build Debug APK
-      - name: Build Debug APK
-        run: flutter build apk --debug
+      # 6️⃣ Build Release APK for arm64-v8a only
+      - name: Build Release APK (arm64-v8a)
+        run: flutter build apk --release --target-platform android-arm64
         working-directory: ./
 
-      # 8️⃣ Upload APK as artifact
-      - name: Upload Debug APK
+      # 7️⃣ Upload APK as artifact
+      - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: itemrdc-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: itemrdc-arm64-apk
+          path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk

@@ -1,6 +1,7 @@
-import 'dart:ui';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
+import 'package:flutter/services.dart';
+import 'liquid_button.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,134 +13,73 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: Stack(
-          children: [
-            // Background content to see the blur effect
-            Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/wallpaper_light.webp'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            // Center the button
-            const Center(
-              child: LiquidButton(),
-            ),
-          ],
-        ),
+      title: 'Liquid Button Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        brightness: Brightness.light,
       ),
+      home: const HomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class LiquidButton extends StatefulWidget {
-  const LiquidButton({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<LiquidButton> createState() => _LiquidButtonState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _LiquidButtonState extends State<LiquidButton> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  Offset _dragOffset = Offset.zero;
-
-  // Tanh function for a squishy effect, similar to the original code
-  double _tanh(double x) {
-    return (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x));
-  }
+class _HomePageState extends State<HomePage> {
+  // We need to load the shader from assets. This is an async operation.
+  ui.FragmentShader? lensShader;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
+    _loadShader();
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _onPanStart(DragStartDetails details) {
-    _controller.stop();
-  }
-
-  void _onPanUpdate(DragUpdateDetails details) {
-    setState(() {
-      _dragOffset += details.delta;
-    });
-  }
-
-  void _onPanEnd(DragEndDetails details) {
-    // Animate back to the center
-    final animation = Tween<Offset>(begin: _dragOffset, end: Offset.zero)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
-
-    animation.addListener(() {
+  void _loadShader() async {
+    try {
+      final program =
+          await ui.FragmentProgram.fromAsset('assets/shaders/lens_effect.frag');
       setState(() {
-        _dragOffset = animation.value;
+        lensShader = program.fragmentShader();
       });
-    });
-
-    _controller.reset();
-    _controller.forward();
+    } catch (error) {
+      debugPrint('Error loading shader: $error');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = const Size(200, 50);
-
-    // Calculate transformation based on drag offset
-    final maxOffset = size.shortestSide;
-    final tx = maxOffset * _tanh(0.5 * _dragOffset.dx / maxOffset);
-    final ty = maxOffset * _tanh(0.5 * _dragOffset.dy / maxOffset);
-
-    // Squishy scale effect
-    final scaleX = 1.0 + 0.1 * (_dragOffset.dx.abs() / size.width).clamp(0.0, 1.0);
-    final scaleY = 1.0 + 0.1 * (_dragOffset.dy.abs() / size.height).clamp(0.0, 1.0);
-
-    final transform = Matrix4.identity()
-      ..translate(tx, ty)
-      ..scale(scaleX, scaleY);
-
-    return GestureDetector(
-      onPanStart: _onPanStart,
-      onPanUpdate: _onPanUpdate,
-      onPanEnd: _onPanEnd,
-      child: Transform(
-        transform: transform,
-        alignment: FractionalOffset.center,
-        child: SizedBox(
-          width: size.width,
-          height: size.height,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(size.height),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(size.height),
-                  border: Border.all(color: Colors.white.withOpacity(0.3)),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Liquid Button',
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/wallpaper_light.webp'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: lensShader == null
+              ? const CircularProgressIndicator() // Show a loader while shader compiles
+              : LiquidButton(
+                  shader: lensShader!,
+                  onClick: () {
+                    debugPrint("Button clicked!");
+                  },
+                  child: const Text(
+                    'Transparent Liquid Button',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-              ),
-            ),
-          ),
         ),
       ),
     );

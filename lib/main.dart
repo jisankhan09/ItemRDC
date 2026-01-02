@@ -34,6 +34,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // We need to load the shader from assets. This is an async operation.
   ui.FragmentShader? lensShader;
+  String? _shaderError;
 
   @override
   void initState() {
@@ -50,6 +51,9 @@ class _HomePageState extends State<HomePage> {
       });
     } catch (error) {
       debugPrint('Error loading shader: $error');
+      setState(() {
+        _shaderError = error.toString();
+      });
     }
   }
 
@@ -64,9 +68,8 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         child: Center(
-          child: lensShader == null
-              ? const CircularProgressIndicator() // Show a loader while shader compiles
-              : LiquidButton(
+          child: lensShader != null
+              ? LiquidButton(
                   shader: lensShader!,
                   onClick: () {
                     debugPrint("Button clicked!");
@@ -79,7 +82,18 @@ class _HomePageState extends State<HomePage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
+                )
+              : _shaderError != null
+                  ? Container(
+                      padding: const EdgeInsets.all(16.0),
+                      color: Colors.white.withOpacity(0.8),
+                      child: Text(
+                        'Failed to load shader:\n\n$_shaderError',
+                        style: const TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  : const CircularProgressIndicator(),
         ),
       ),
     );

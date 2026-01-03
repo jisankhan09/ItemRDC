@@ -28,9 +28,9 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            GlowTextField(label: "Email"),
+            GlowTextField(label: "Enter email"),
             SizedBox(height: 20),
-            GlowTextField(label: "Password"),
+            GlowTextField(label: "Enter Password"),
           ],
         ),
       ),

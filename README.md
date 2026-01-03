@@ -1,19 +1,20 @@
-# ItemRDC
+# 🚀 ItemRDC - Live Web App
 
-A new Flutter project created with FlutLab - https://flutlab.io
+এটি একটি ফ্ল্যাটার প্রজেক্ট যা অটোমেটিকভাবে গিটহাব পেজে হোস্ট করা হয়েছে। নিচে দেওয়া লিঙ্কে ক্লিক করে আপনি সরাসরি অ্যাপটি ব্রাউজারে ব্যবহার করতে পারবেন।
 
-## Getting Started
+### 🔗 লাইভ লিঙ্ক:
+**[এখানে ক্লিক করুন: ItemRDC Web App](https://laraholand.github.io/ItemRDC/)**
 
-A few resources to get you started if this is your first Flutter project:
+---
 
-- https://flutter.dev/docs/get-started/codelab
-- https://flutter.dev/docs/cookbook
+## 🛠 প্রজেক্ট ওভারভিউ
+- **Framework:** Flutter (Web)
+- **Deployment:** GitHub Actions & GitHub Pages
+- **Development Tool:** [FlutLab](https://flutlab.io)
 
-For help getting started with Flutter, view our
-https://flutter.dev/docs, which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📦 কিভাবে চালাবেন?
+আপনার যদি এই কোডটি নিজের পিসিতে চালাতে ইচ্ছা হয়, তবে নিচের ধাপগুলো অনুসরণ করুন:
 
-## Getting Started: FlutLab - Flutter Online IDE
-
-- How to use FlutLab? Please, view our https://flutlab.io/docs
-- Join the discussion and conversation on https://flutlab.io/residents
+1. এই রিপোজিটরি ক্লোন করুন:
+   ```bash
+   git clone [https://github.com/laraholand/ItemRDC.git](https://github.com/laraholand/ItemRDC.git)

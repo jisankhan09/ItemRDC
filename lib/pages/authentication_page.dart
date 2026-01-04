@@ -1,22 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:itemrdc/util/glow_text_field.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const LoginPage(),
-    );
-  }
-}
-
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -56,20 +40,25 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           // scale animation for ClipPath
           return Stack(
             children: [
-              ScaleTransition(
-                scale: Tween<double>(begin: 0.0, end: 2.0).animate(
-                  CurvedAnimation(parent: animation, curve: Curves.easeInOut),
-                ),
-                origin: const Offset(-50, -50),
-                child: ClipPath(
-                  clipper: QuarterCircleClipper(),
-                  child: Container(
-                    width: 220,
-                    height: 220,
-                    color: const Color(0xffcff3f4),
+              AnimatedBuilder(
+              animation: animation,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: Tween<double>(begin: 0.0, end: 2.0)
+                      .animate(CurvedAnimation(parent: animation, curve: Curves.easeInOut))
+                      .value,
+                  origin: const Offset(-50, -50),
+                  child: ClipPath(
+                    clipper: QuarterCircleClipper(),
+                    child: Container(
+                      width: 220,
+                      height: 220,
+                      color: const Color(0xffcff3f4),
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
+            ),
               FadeTransition(
                 opacity: animation,
                 child: child,
@@ -116,7 +105,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 GlowTextField(
                   label: "Enter Password",
                   controller: passwordController,
-                  inputType: TextInputType.password,
                   isPassword: true,
                   textColor: Colors.black,
                 ),
@@ -264,7 +252,6 @@ class _SignUpPageState extends State<SignUpPage> with SingleTickerProviderStateM
                 GlowTextField(
                   label: "Enter Password",
                   controller: passwordController,
-                  inputType: TextInputType.password,
                   isPassword: true,
                   textColor: Colors.black,
                 ),

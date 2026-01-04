@@ -177,7 +177,7 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin{
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   late AnimationController animationController;

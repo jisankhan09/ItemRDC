@@ -138,7 +138,7 @@ class _SignUpPageState extends State<SignUpPage>
           ClipPath(
             clipper: QuarterCircleClipper(),
             child: Container(
-              width: widthAnimation.value,
+              width: heightAnimation.value,
               height: heightAnimation.value,
               color: const Color(0xffcff3f4),
               child: const Center(
@@ -282,7 +282,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           ClipPath(
             clipper: QuarterCircleClipper(),
             child: Container(
-              width: widthAnimation.value,
+              width: heightAnimation.value,
               height: heightAnimation.value,
               color: const Color(0xffcff3f4),
               child: const Center(

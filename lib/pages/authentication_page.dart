@@ -8,40 +8,59 @@ class SignUpPage extends StatefulWidget {
   State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> with SingleTickerProviderStateMixin {
+class _SignUpPageState extends State<SignUpPage>
+    with SingleTickerProviderStateMixin {
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   late AnimationController animationController;
-  late Animation animation;
+  late Animation<double> animation;
 
   @override
   void initState() {
     super.initState();
+
     animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(milliseconds: 800),
     );
 
-    // animation = Tween(begin:0.0,end:1.0).animate(animationController);
-    // AnimationController already has default value 0-1
+    // Tween for size animation from full screen to 220
+    animation = Tween<double>(
+      begin: 1.0, // full screen
+      end: 220.0, // default size
+    ).animate(
+      CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+    );
 
     animationController.addListener(() {
       setState(() {});
     });
 
-    // animationController.forward(); // Call when needed, e.g., on button click
+    // Start animation after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      animationController.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Screen size
+    final size = MediaQuery.of(context).size;
+    final clipSize =
+        animation.value == 1.0 ? size.width : animation.value; // dynamic
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-
-
           /// Scrollable Form
           SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 240, 20, 100),
@@ -70,7 +89,6 @@ class _SignUpPageState extends State<SignUpPage> with SingleTickerProviderStateM
                   textColor: Colors.black,
                 ),
                 const SizedBox(height: 25),
-
                 Row(
                   children: [
                     const Text(
@@ -123,12 +141,13 @@ class _SignUpPageState extends State<SignUpPage> with SingleTickerProviderStateM
               tooltip: "Support",
             ),
           ),
-                    /// Header Shape
+
+          /// Animated Header Shape
           ClipPath(
             clipper: QuarterCircleClipper(),
             child: Container(
-              width: 220,
-              height: 220,
+              width: clipSize,
+              height: clipSize,
               color: const Color(0xffcff3f4),
               child: const Center(
                 child: Text(

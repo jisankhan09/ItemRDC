@@ -1,37 +1,35 @@
 import 'package:flutter/material.dart';
-import 'glow_text_field.dart';
-void main() {
-  runApp(const MyApp());
-}
+import 'pages/sign_up.dart';
+
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomePage(),
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
+      home: SignUpPage(),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
 
+class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F0F),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            GlowTextField(label: "Enter email address "),
-            SizedBox(height: 20),
-            GlowTextField(label: "Enter Password"),
-          ],
+      body: Center(
+        child: Container(
+          child: CircleAvatar(
+            backgroundImage: NetworkImage(
+                "https://www.kasandbox.org/programming-images/avatars/leaf-blue.png"),
+          ),
         ),
       ),
     );

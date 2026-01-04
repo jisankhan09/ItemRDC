@@ -106,6 +106,30 @@ class _SignUpPageState extends State<SignUpPage>
               ],
             ),
           ),
+          Positioned(
+            bottom: 20,
+            left: 20,
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                );
+              },
+              child: const Text("Already have an account?"),
+            ),
+          ),
+
+          /// Bottom Right
+          Positioned(
+            bottom: 15,
+            right: 20,
+            child: IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.help),
+              tooltip: "Support",
+            ),
+          ),
 
           /// Animated ClipPath
           ClipPath(

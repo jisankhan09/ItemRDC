@@ -114,7 +114,9 @@ class _SignUpPageState extends State<SignUpPage>
             bottom: 20,
             left: 20,
             child: InkWell(
-              onTap: () {
+              onTap: () async{
+              await animationController.reverse();
+      if (!mounted) return;
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const LoginPage()),
@@ -260,7 +262,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             bottom: 20,
             left: 20,
             child: InkWell(
-              onTap: () {
+              onTap: () async {
+              await animationController.reverse();
+      if (!mounted) return;
                 Navigator.pop(context);
               },
               child: const Text("Don't have an account?"),

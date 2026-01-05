@@ -1,8 +1,12 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:glassmorphism/glassmorphism.dart';
+import 'package:itemrdc/pages/home_page.dart';
+import 'package:itemrdc/util/glow_text_field.dart';
+import 'package:itemrdc/util/liquid_button.dart';
+import 'package:itemrdc/util/particles.dart'; // ParticleScene
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+  const SignUpPage({Key? key}) : super(key: key);
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -16,207 +20,133 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF0F0F0F), // Dark background
       body: Stack(
         children: [
-          /// 🔥 Background image
+          // Particle Background
+          const Positioned.fill(child: ParticleScene()),
+
+          // Overlay for glass effect
           Positioned.fill(
-            child: Image.network(
-              'https://images.unsplash.com/photo-1685330972883-66b9c5e7d8e3?auto=format&fit=crop&w=800&q=80',
-              fit: BoxFit.cover,
+            child: IgnorePointer(
+              ignoring: true,
+              child: Container(color: Colors.black.withOpacity(0.3)),
             ),
           ),
 
-          /// 🌫 Glass overlay for readability
-          Positioned.fill(
-            child: GlassmorphicContainer(
-              width: double.infinity,
-              height: double.infinity,
-              borderRadius: 0,
-              blur: 20,
-              alignment: Alignment.center,
-              border: 0,
-              linearGradient: LinearGradient(
-                colors: [
-                  Colors.white.withOpacity(0.2),
-                  Colors.white.withOpacity(0.2),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderGradient: LinearGradient(
-                colors: [Colors.transparent, Colors.transparent],
-              ),
-            ),
-          ),
-
-          /// TOP SHAPE
-          ClipPath(
-            clipper: QuarterCircleClipper(),
-            child: GlassmorphicContainer(
-              width: 200,
-              height: 200,
-              borderRadius: 0,
-              blur: 15,
-              alignment: Alignment.center,
-              border: 2,
-              linearGradient: LinearGradient(
-                colors: [
-                  Colors.white.withOpacity(0.3),
-                  Colors.white.withOpacity(0.1),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderGradient: LinearGradient(
-                colors: [Colors.white.withOpacity(0.5), Colors.white.withOpacity(0.5)],
-              ),
-              child: const Center(
-                child: Text(
-                  "Welcome In \nItem RDC",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          /// FORM
+          // Centered Container (like CSS .container)
           Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  /// Phone
-                  GlassmorphicContainer(
-                    width: double.infinity,
-                    height: 60,
-                    borderRadius: 20,
-                    blur: 15,
-                    alignment: Alignment.center,
-                    border: 1,
-                    linearGradient: LinearGradient(
-                      colors: [
-                        Colors.white.withOpacity(0.2),
-                        Colors.white.withOpacity(0.1),
-                      ],
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Container(
+                padding: const EdgeInsets.all(25),
+                decoration: BoxDecoration(
+                  color: const Color(0x1A1A1A), // semi-transparent dark
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white.withOpacity(0.05),
+                      blurRadius: 30,
                     ),
-                    borderGradient: LinearGradient(
-                      colors: [Colors.white.withOpacity(0.5), Colors.white.withOpacity(0.5)],
-                    ),
-                    child: TextField(
-                      controller: phoneController,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "Enter phone number",
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  /// Email
-                  GlassmorphicContainer(
-                    width: double.infinity,
-                    height: 60,
-                    borderRadius: 20,
-                    blur: 15,
-                    alignment: Alignment.center,
-                    border: 1,
-                    linearGradient: LinearGradient(
-                      colors: [
-                        Colors.white.withOpacity(0.2),
-                        Colors.white.withOpacity(0.1),
-                      ],
-                    ),
-                    borderGradient: LinearGradient(
-                      colors: [Colors.white.withOpacity(0.5), Colors.white.withOpacity(0.5)],
-                    ),
-                    child: TextField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "Enter Email",
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  /// Password
-                  GlassmorphicContainer(
-                    width: double.infinity,
-                    height: 60,
-                    borderRadius: 20,
-                    blur: 15,
-                    alignment: Alignment.center,
-                    border: 1,
-                    linearGradient: LinearGradient(
-                      colors: [
-                        Colors.white.withOpacity(0.2),
-                        Colors.white.withOpacity(0.1),
-                      ],
-                    ),
-                    borderGradient: LinearGradient(
-                      colors: [Colors.white.withOpacity(0.5), Colors.white.withOpacity(0.5)],
-                    ),
-                    child: TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "Enter Password",
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  /// Sign Up Row
-                  Row(
+                  ],
+                ),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text(
-                        "Sign Up",
+                        "Welcome In \nItem RDC",
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 27,
+                          fontSize: 26,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: Colors.white,
                         ),
                       ),
-                      const Spacer(),
-                      GlassmorphicContainer(
-                        width: 55,
-                        height: 55,
-                        borderRadius: 28,
-                        blur: 20,
-                        alignment: Alignment.center,
-                        border: 1,
-                        linearGradient: LinearGradient(
-                          colors: [
-                            Colors.black.withOpacity(0.5),
-                            Colors.black.withOpacity(0.3),
-                          ],
+                      const SizedBox(height: 20),
+
+                      // Phone
+                      GlowTextField(
+                        label: "Enter phone number",
+                        controller: phoneController,
+                        backgroundColor: const Color(0xFF2A2A2A),
+                        textColor: Colors.white,
+                        inputType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Email
+                      GlowTextField(
+                        label: "Enter Email",
+                        controller: emailController,
+                        backgroundColor: const Color(0xFF2A2A2A),
+                        textColor: Colors.white,
+                        inputType: TextInputType.emailAddress,
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Password
+                      GlowTextField(
+                        label: "Enter Password",
+                        controller: passwordController,
+                        backgroundColor: const Color(0xFF2A2A2A),
+                        textColor: Colors.white,
+                        isPassword: true,
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Sign Up Button
+                      LiquidButton(
+                        width: double.infinity,
+                        height: 50,
+                        backgroundColor: const Color(0xFFFFDD33),
+                        borderColor: Colors.transparent,
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => HomePage()),
+                          );
+                        },
+                        child: const Text(
+                          "Sign Up",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
                         ),
-                        borderGradient: LinearGradient(
-                          colors: [Colors.black.withOpacity(0.7), Colors.black.withOpacity(0.7)],
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.arrow_forward, color: Colors.white),
-                          onPressed: () {
-                            // Navigation code here
-                          },
-                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Bottom Link
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Already have an account? ",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const Login()),
+                              );
+                            },
+                            child: const Text(
+                              "Sign In",
+                              style: TextStyle(
+                                color: Color(0xFFFFDD33),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -226,22 +156,134 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 }
 
-/// Custom clipper
-class QuarterCircleClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.moveTo(size.width, 0);
-    path.arcToPoint(
-      Offset(0, size.height),
-      radius: Radius.circular(size.width),
-      clockwise: true,
-    );
-    path.lineTo(0, 0);
-    path.close();
-    return path;
-  }
+// Login Page
+class Login extends StatefulWidget {
+  const Login({Key? key}) : super(key: key);
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F0F0F),
+      body: Stack(
+        children: [
+          const Positioned.fill(child: ParticleScene()),
+
+          Positioned.fill(
+            child: IgnorePointer(
+              ignoring: true,
+              child: Container(color: Colors.black.withOpacity(0.3)),
+            ),
+          ),
+
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Container(
+                padding: const EdgeInsets.all(25),
+                decoration: BoxDecoration(
+                  color: const Color(0x1A1A1A),
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white.withOpacity(0.05),
+                      blurRadius: 30,
+                    ),
+                  ],
+                ),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Welcome Back",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      GlowTextField(
+                        label: "Enter Email",
+                        controller: emailController,
+                        backgroundColor: const Color(0xFF2A2A2A),
+                        textColor: Colors.white,
+                        inputType: TextInputType.emailAddress,
+                      ),
+                      const SizedBox(height: 12),
+
+                      GlowTextField(
+                        label: "Enter Password",
+                        controller: passwordController,
+                        backgroundColor: const Color(0xFF2A2A2A),
+                        textColor: Colors.white,
+                        isPassword: true,
+                      ),
+                      const SizedBox(height: 20),
+
+                      LiquidButton(
+                        width: double.infinity,
+                        height: 50,
+                        backgroundColor: const Color(0xFFFFDD33),
+                        borderColor: Colors.transparent,
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => HomePage()),
+                          );
+                        },
+                        child: const Text(
+                          "Sign In",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Bottom Links
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InkWell(
+                            onTap: () => Navigator.pop(context),
+                            child: const Text(
+                              "Don't have an account?",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              debugPrint("Forget password clicked");
+                            },
+                            child: const Text(
+                              "Forget password",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

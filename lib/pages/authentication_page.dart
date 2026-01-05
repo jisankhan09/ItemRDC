@@ -4,14 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:itemrdc/pages/home_page.dart';
 import 'package:itemrdc/util/glow_text_field.dart';
 import 'package:itemrdc/util/liquid_button.dart';
-import 'package:itemrdc/util/particles.dart'; // ParticleScene
+import 'package:itemrdc/util/particles.dart';
 
-/// Generic liquid effect wrapper with optional auto-bounce on init
+/// --------------------
+/// LiquidEffect Widget
+/// --------------------
 class LiquidEffect extends StatefulWidget {
   final Widget child;
   final double maxScale;
   final double maxOffset;
-  final bool autoBounce; // bounce when first built
+  final bool autoBounce;
 
   const LiquidEffect({
     super.key,
@@ -71,6 +73,7 @@ class _LiquidEffectState extends State<LiquidEffect>
   }
 
   void _onPanStart(_) => _controller.stop();
+
   void _onPanUpdate(DragUpdateDetails details) {
     setState(() {
       _dragOffset += details.delta;
@@ -99,8 +102,10 @@ class _LiquidEffectState extends State<LiquidEffect>
     final tx = widget.maxOffset * _tanh(0.5 * _dragOffset.dx / widget.maxOffset);
     final ty = widget.maxOffset * _tanh(0.5 * _dragOffset.dy / widget.maxOffset);
 
-    final scaleX = 1.0 + widget.maxScale * (_dragOffset.dx.abs() / widget.maxOffset).clamp(0.0, 1.0);
-    final scaleY = 1.0 + widget.maxScale * (_dragOffset.dy.abs() / widget.maxOffset).clamp(0.0, 1.0);
+    final scaleX = 1.0 +
+        widget.maxScale * (_dragOffset.dx.abs() / widget.maxOffset).clamp(0.0, 1.0);
+    final scaleY = 1.0 +
+        widget.maxScale * (_dragOffset.dy.abs() / widget.maxOffset).clamp(0.0, 1.0);
 
     return GestureDetector(
       onPanStart: _onPanStart,
@@ -196,12 +201,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Top Row: Sign Up + Forward Icon
-                      
-
-                      // TextFields
                       LiquidEffect(
-                         
                         child: GlowTextField(
                           label: "Phone",
                           icon: Icons.phone,
@@ -214,7 +214,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       const SizedBox(height: 12),
 
                       LiquidEffect(
-                         
                         child: GlowTextField(
                           label: "Email",
                           icon: Icons.email,
@@ -227,7 +226,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       const SizedBox(height: 12),
 
                       LiquidEffect(
-                         
                         child: GlowTextField(
                           label: "Password",
                           icon: Icons.lock,
@@ -241,7 +239,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
                       // Sign Up Button
                       LiquidEffect(
-                         
                         child: Row(
                           children: [
                             const Text(
@@ -253,20 +250,18 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                             ),
                             const Spacer(),
-                            LiquidEffect(
-                              child: IconButton(
-                                icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
-                                onPressed: () {
+                            IconButton(
+                              icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                              onPressed: () {
                                 Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (_) => HomePage()),
-                                },
-                              ),
+                                  context,
+                                  MaterialPageRoute(builder: (_) => HomePage()),
+                                );
+                              },
                             ),
                           ],
                         ),
                       ),
-                      
                     ],
                   ),
                 ),
@@ -299,7 +294,6 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: const Color(0xFF0F0F0F),
       persistentFooterButtons: [
         LiquidEffect(
-           
           child: Row(
             children: [
               InkWell(
@@ -352,11 +346,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Top Row: Login + Forward Icon
-                      
-                      // TextFields
                       LiquidEffect(
-                         
                         child: GlowTextField(
                           label: "Email",
                           icon: Icons.email,
@@ -369,7 +359,6 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 12),
 
                       LiquidEffect(
-                         
                         child: GlowTextField(
                           label: "Password",
                           icon: Icons.lock,
@@ -381,9 +370,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 20),
 
-                      // Sign In Button
+                      // Login Button
                       LiquidEffect(
-                         
                         child: Row(
                           children: [
                             const Text(
@@ -395,17 +383,13 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             const Spacer(),
-                            LiquidEffect(
-                              child: IconButton(
-                                icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
-                                onPressed: () =>Navigator.pop(context),
-                              ),
+                            IconButton(
+                              icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                              onPressed: () => Navigator.pop(context),
                             ),
                           ],
                         ),
                       ),
-                      
-
                     ],
                   ),
                 ),

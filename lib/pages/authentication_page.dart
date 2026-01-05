@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:itemrdc/pages/home_page.dart';
@@ -5,6 +6,94 @@ import 'package:itemrdc/util/glow_text_field.dart';
 import 'package:itemrdc/util/liquid_button.dart';
 import 'package:itemrdc/util/particles.dart'; // ParticleScene
 
+/// Generic liquid effect wrapper for bouncy UI
+class LiquidEffect extends StatefulWidget {
+  final Widget child;
+  final double maxScale;
+  final double maxOffset;
+
+  const LiquidEffect({
+    super.key,
+    required this.child,
+    this.maxScale = 0.05, // up to 5% scale
+    this.maxOffset = 15,  // max drag offset
+  });
+
+  @override
+  State<LiquidEffect> createState() => _LiquidEffectState();
+}
+
+class _LiquidEffectState extends State<LiquidEffect>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  Offset _dragOffset = Offset.zero;
+
+  double _tanh(double x) => (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x));
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onPanStart(_) => _controller.stop();
+
+  void _onPanUpdate(DragUpdateDetails details) {
+    setState(() {
+      _dragOffset += details.delta;
+    });
+  }
+
+  void _onPanEnd(_) {
+    final animation = Tween<Offset>(
+      begin: _dragOffset,
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+
+    animation.addListener(() {
+      setState(() {
+        _dragOffset = animation.value;
+      });
+    });
+
+    _controller
+      ..reset()
+      ..forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final tx = widget.maxOffset * _tanh(0.5 * _dragOffset.dx / widget.maxOffset);
+    final ty = widget.maxOffset * _tanh(0.5 * _dragOffset.dy / widget.maxOffset);
+
+    final scaleX = 1.0 + widget.maxScale * (_dragOffset.dx.abs() / widget.maxOffset).clamp(0.0, 1.0);
+    final scaleY = 1.0 + widget.maxScale * (_dragOffset.dy.abs() / widget.maxOffset).clamp(0.0, 1.0);
+
+    return GestureDetector(
+      onPanStart: _onPanStart,
+      onPanUpdate: _onPanUpdate,
+      onPanEnd: _onPanEnd,
+      child: Transform(
+        transform: Matrix4.identity()..translate(tx, ty)..scale(scaleX, scaleY),
+        alignment: Alignment.center,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+/// --------------------
+/// Sign Up Page
+/// --------------------
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
 
@@ -20,13 +109,13 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F0F), // Dark background
+      backgroundColor: const Color(0xFF0F0F0F),
       body: Stack(
         children: [
           // Particle Background
           const Positioned.fill(child: ParticleScene()),
 
-          // Overlay for glass effect
+          // Glass overlay
           Positioned.fill(
             child: IgnorePointer(
               ignoring: true,
@@ -34,14 +123,13 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
           ),
 
-          // Centered Container (like CSS .container)
           Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: Container(
                 padding: const EdgeInsets.all(25),
                 decoration: BoxDecoration(
-                  color: const Color(0x1A1A1A), // semi-transparent dark
+                  color: const Color(0x1A1A1A),
                   borderRadius: BorderRadius.circular(14),
                   boxShadow: [
                     BoxShadow(
@@ -67,53 +155,64 @@ class _SignUpPageState extends State<SignUpPage> {
                       const SizedBox(height: 20),
 
                       // Phone
-                      GlowTextField(
-                        label: "Enter phone number",
-                        controller: phoneController,
-                        backgroundColor: const Color(0xFF2A2A2A),
-                        textColor: Colors.white,
-                        inputType: TextInputType.phone,
+                      LiquidEffect(
+                        child: GlowTextField(
+                          label: "Enter phone number",
+                          icon: Icons.phone,
+                          controller: phoneController,
+                          backgroundColor: const Color(0xFF2A2A2A),
+                          textColor: Colors.white,
+                          inputType: TextInputType.phone,
+                        ),
                       ),
                       const SizedBox(height: 12),
 
                       // Email
-                      GlowTextField(
-                        label: "Enter Email",
-                        controller: emailController,
-                        backgroundColor: const Color(0xFF2A2A2A),
-                        textColor: Colors.white,
-                        inputType: TextInputType.emailAddress,
+                      LiquidEffect(
+                        child: GlowTextField(
+                          label: "Enter Email",
+                          icon: Icons.email,
+                          controller: emailController,
+                          backgroundColor: const Color(0xFF2A2A2A),
+                          textColor: Colors.white,
+                          inputType: TextInputType.emailAddress,
+                        ),
                       ),
                       const SizedBox(height: 12),
 
                       // Password
-                      GlowTextField(
-                        label: "Enter Password",
-                        controller: passwordController,
-                        backgroundColor: const Color(0xFF2A2A2A),
-                        textColor: Colors.white,
-                        isPassword: true,
+                      LiquidEffect(
+                        child: GlowTextField(
+                          label: "Enter Password",
+                          icon: Icons.lock,
+                          controller: passwordController,
+                          backgroundColor: const Color(0xFF2A2A2A),
+                          textColor: Colors.white,
+                          isPassword: true,
+                        ),
                       ),
                       const SizedBox(height: 20),
 
                       // Sign Up Button
-                      LiquidButton(
-                        width: double.infinity,
-                        height: 50,
-                        backgroundColor: const Color(0xFFFFDD33),
-                        borderColor: Colors.transparent,
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => HomePage()),
-                          );
-                        },
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
+                      LiquidEffect(
+                        child: LiquidButton(
+                          width: double.infinity,
+                          height: 50,
+                          backgroundColor: const Color(0xFFFFDD33),
+                          borderColor: Colors.transparent,
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (_) => HomePage()),
+                            );
+                          },
+                          child: const Text(
+                            "Sign Up",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ),
@@ -127,18 +226,20 @@ class _SignUpPageState extends State<SignUpPage> {
                             "Already have an account? ",
                             style: TextStyle(color: Colors.grey),
                           ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (_) => const Login()),
-                              );
-                            },
-                            child: const Text(
-                              "Sign In",
-                              style: TextStyle(
-                                color: Color(0xFFFFDD33),
-                                fontWeight: FontWeight.bold,
+                          LiquidEffect(
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                                );
+                              },
+                              child: const Text(
+                                "Sign In",
+                                style: TextStyle(
+                                  color: Color(0xFFFFDD33),
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
@@ -156,15 +257,17 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 }
 
-// Login Page
-class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+/// --------------------
+/// Login Page
+/// --------------------
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<Login> createState() => _LoginState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -214,41 +317,52 @@ class _LoginState extends State<Login> {
                       ),
                       const SizedBox(height: 20),
 
-                      GlowTextField(
-                        label: "Enter Email",
-                        controller: emailController,
-                        backgroundColor: const Color(0xFF2A2A2A),
-                        textColor: Colors.white,
-                        inputType: TextInputType.emailAddress,
+                      // Email
+                      LiquidEffect(
+                        child: GlowTextField(
+                          label: "Enter Email",
+                          icon: Icons.email,
+                          controller: emailController,
+                          backgroundColor: const Color(0xFF2A2A2A),
+                          textColor: Colors.white,
+                          inputType: TextInputType.emailAddress,
+                        ),
                       ),
                       const SizedBox(height: 12),
 
-                      GlowTextField(
-                        label: "Enter Password",
-                        controller: passwordController,
-                        backgroundColor: const Color(0xFF2A2A2A),
-                        textColor: Colors.white,
-                        isPassword: true,
+                      // Password
+                      LiquidEffect(
+                        child: GlowTextField(
+                          label: "Enter Password",
+                          icon: Icons.lock,
+                          controller: passwordController,
+                          backgroundColor: const Color(0xFF2A2A2A),
+                          textColor: Colors.white,
+                          isPassword: true,
+                        ),
                       ),
                       const SizedBox(height: 20),
 
-                      LiquidButton(
-                        width: double.infinity,
-                        height: 50,
-                        backgroundColor: const Color(0xFFFFDD33),
-                        borderColor: Colors.transparent,
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => HomePage()),
-                          );
-                        },
-                        child: const Text(
-                          "Sign In",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
+                      // Sign In Button
+                      LiquidEffect(
+                        child: LiquidButton(
+                          width: double.infinity,
+                          height: 50,
+                          backgroundColor: const Color(0xFFFFDD33),
+                          borderColor: Colors.transparent,
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (_) => HomePage()),
+                            );
+                          },
+                          child: const Text(
+                            "Sign In",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ),
@@ -258,20 +372,22 @@ class _LoginState extends State<Login> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          InkWell(
-                            onTap: () => Navigator.pop(context),
-                            child: const Text(
-                              "Don't have an account?",
-                              style: TextStyle(color: Colors.grey),
+                          LiquidEffect(
+                            child: InkWell(
+                              onTap: () => Navigator.pop(context),
+                              child: const Text(
+                                "Don't have an account?",
+                                style: TextStyle(color: Colors.grey),
+                              ),
                             ),
                           ),
-                          InkWell(
-                            onTap: () {
-                              debugPrint("Forget password clicked");
-                            },
-                            child: const Text(
-                              "Forget password",
-                              style: TextStyle(color: Colors.grey),
+                          LiquidEffect(
+                            child: InkWell(
+                              onTap: () => debugPrint("Forget password clicked"),
+                              child: const Text(
+                                "Forget password",
+                                style: TextStyle(color: Colors.grey),
+                              ),
                             ),
                           ),
                         ],

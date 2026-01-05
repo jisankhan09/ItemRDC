@@ -16,7 +16,7 @@ class GlowTextField extends StatefulWidget {
     this.icon,
     this.isPassword = false,
     this.inputType = TextInputType.text,
-    this.backgroundColor = const Color(0xffffffff),
+    this.backgroundColor = const Color(0x00000000),
     this.textColor = Colors.black,
   });
 

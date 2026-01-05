@@ -23,8 +23,6 @@ class _ParticleSceneState extends State<ParticleScene>
   void initState() {
     super.initState();
     ticker = createTicker(_tick)..start();
-
-    /// JS baseSpawn equivalent
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final box = context.findRenderObject() as RenderBox?;
       if (box != null) {
@@ -88,7 +86,7 @@ class _ParticleSceneState extends State<ParticleScene>
             (p) => (p.pos - pos).distance < 50,
           );
 
-          _spawn(pos, 2); // JS touchSpawn equivalent
+          _spawn(pos, 2);
         },
         child: CustomPaint(
           size: Size.infinite,
@@ -136,7 +134,6 @@ class Particle {
 class ParticlePainter extends CustomPainter {
   final List<Particle> particles;
   
-  // এই লাইনটি যোগ করা হয়েছে
   static const double connectDistance = 130; 
 
   ParticlePainter(this.particles);
@@ -151,7 +148,6 @@ class ParticlePainter extends CustomPainter {
         final b = particles[j];
         final d = (a.pos - b.pos).distance;
 
-        // এখন এই connectDistance কাজ করবে
         if (d < connectDistance) {
           final alpha = (1 - d / connectDistance) * 0.8;
           canvas.drawLine(

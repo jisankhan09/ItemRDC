@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:itemrdc/pages/home_page.dart';
 import 'package:itemrdc/util/glow_text_field.dart';
 import 'package:itemrdc/util/liquid_button.dart';
-import 'package:itemrdc/util/particles.dart';
+import 'package:itemrdc/util/particles.dart'; // ParticleScene
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -28,8 +28,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
           /// 🎨 overlay (UI readable রাখতে)
           Positioned.fill(
-            child: Container(
-              color: Colors.white.withOpacity(0.85),
+            child: IgnorePointer(
+              ignoring: true, // ✅ overlay touch ignore করবে
+              child: Container(
+                color: Colors.white.withOpacity(0.85),
+              ),
             ),
           ),
 
@@ -151,6 +154,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 }
+
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
@@ -171,8 +175,11 @@ class _LoginState extends State<Login> {
 
           /// overlay
           Positioned.fill(
-            child: Container(
-              color: Colors.white.withOpacity(0.85),
+            child: IgnorePointer(
+              ignoring: true, // ✅ overlay touch ignore
+              child: Container(
+                color: Colors.white.withOpacity(0.85),
+              ),
             ),
           ),
 
@@ -277,21 +284,21 @@ class _LoginState extends State<Login> {
     );
   }
 }
+
 class QuarterCircleClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
 
-    path.moveTo(size.width * 1.0, 0); // M80 0
-
+    path.moveTo(size.width, 0);
     path.arcToPoint(
-      Offset(0, size.height * 1.0), // 0 80
-      radius: Radius.circular(size.width * 1.0), // 80 80
+      Offset(0, size.height),
+      radius: Radius.circular(size.width),
       clockwise: true,
     );
 
-    path.lineTo(0, 0); // L0 0
-    path.close(); // Z
+    path.lineTo(0, 0);
+    path.close();
 
     return path;
   }

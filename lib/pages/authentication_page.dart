@@ -277,3 +277,25 @@ class _LoginState extends State<Login> {
     );
   }
 }
+class QuarterCircleClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+
+    path.moveTo(size.width * 1.0, 0); // M80 0
+
+    path.arcToPoint(
+      Offset(0, size.height * 1.0), // 0 80
+      radius: Radius.circular(size.width * 1.0), // 80 80
+      clockwise: true,
+    );
+
+    path.lineTo(0, 0); // L0 0
+    path.close(); // Z
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}

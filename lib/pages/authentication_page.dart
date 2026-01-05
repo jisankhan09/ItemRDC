@@ -36,11 +36,11 @@ class _SignUpPageState extends State<SignUpPage>
       final screenSize = MediaQuery.of(context).size;
 
       widthAnimation = Tween<double>(begin: screenSize.width, end: 220).animate(
-        CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+        CurvedAnimation(parent: animationController, curve: Curves.linear),
       )..addListener(() => setState(() {}));
 
       heightAnimation = Tween<double>(begin: screenSize.height, end: 220).animate(
-        CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+        CurvedAnimation(parent: animationController, curve: Curves.linear),
       );
 
       animationController.forward();
@@ -191,11 +191,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       final screenSize = MediaQuery.of(context).size;
 
       widthAnimation = Tween<double>(begin: screenSize.width, end: 220).animate(
-        CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+        CurvedAnimation(parent: animationController, curve: Curves.linear),
       )..addListener(() => setState(() {}));
 
       heightAnimation = Tween<double>(begin: screenSize.height, end: 220).animate(
-        CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+        CurvedAnimation(parent: animationController, curve: Curves.linear),
       );
 
       animationController.forward();

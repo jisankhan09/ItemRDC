@@ -6,17 +6,19 @@ import 'package:itemrdc/util/glow_text_field.dart';
 import 'package:itemrdc/util/liquid_button.dart';
 import 'package:itemrdc/util/particles.dart'; // ParticleScene
 
-/// Generic liquid effect wrapper for bouncy UI
+/// Generic liquid effect wrapper with optional auto-bounce on init
 class LiquidEffect extends StatefulWidget {
   final Widget child;
   final double maxScale;
   final double maxOffset;
+  final bool autoBounce; // bounce when first built
 
   const LiquidEffect({
     super.key,
     required this.child,
-    this.maxScale = 0.05, // up to 5% scale
-    this.maxOffset = 15,  // max drag offset
+    this.maxScale = 0.05,
+    this.maxOffset = 15,
+    this.autoBounce = false,
   });
 
   @override
@@ -37,6 +39,29 @@ class _LiquidEffectState extends State<LiquidEffect>
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
+
+    if (widget.autoBounce) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _startBounce();
+      });
+    }
+  }
+
+  void _startBounce() {
+    final animation = Tween<Offset>(
+      begin: const Offset(0, -20),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+
+    animation.addListener(() {
+      setState(() {
+        _dragOffset = animation.value;
+      });
+    });
+
+    _controller
+      ..reset()
+      ..forward();
   }
 
   @override
@@ -46,7 +71,6 @@ class _LiquidEffectState extends State<LiquidEffect>
   }
 
   void _onPanStart(_) => _controller.stop();
-
   void _onPanUpdate(DragUpdateDetails details) {
     setState(() {
       _dragOffset += details.delta;
@@ -110,12 +134,42 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0F0F0F),
+      persistentFooterButtons: [
+        LiquidEffect(
+          autoBounce: true,
+          child: Row(
+            children: [
+              InkWell(
+                onTap: () => Navigator.pop(context),
+                child: const Text(
+                  "Already have an account?",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+              const Spacer(),
+              InkWell(
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
+                  );
+                },
+                child: const Text(
+                  "Sign In",
+                  style: TextStyle(
+                    color: Color(0xFFFFDD33),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
       body: Stack(
         children: [
-          // Particle Background
           const Positioned.fill(child: ParticleScene()),
 
-          // Glass overlay
           Positioned.fill(
             child: IgnorePointer(
               ignoring: true,
@@ -143,21 +197,36 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        "Welcome In \nItem RDC",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                      // Top Row: Sign Up + Forward Icon
+                      LiquidEffect(
+                        autoBounce: true,
+                        child: Row(
+                          children: [
+                            const Text(
+                              "Sign Up",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const Spacer(),
+                            LiquidEffect(
+                              child: IconButton(
+                                icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                                onPressed: () {},
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 20),
 
-                      // Phone
+                      // TextFields
                       LiquidEffect(
+                        autoBounce: true,
                         child: GlowTextField(
-                          label: "Enter phone number",
+                          label: "Phone",
                           icon: Icons.phone,
                           controller: phoneController,
                           backgroundColor: const Color(0xFF2A2A2A),
@@ -167,10 +236,10 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       const SizedBox(height: 12),
 
-                      // Email
                       LiquidEffect(
+                        autoBounce: true,
                         child: GlowTextField(
-                          label: "Enter Email",
+                          label: "Email",
                           icon: Icons.email,
                           controller: emailController,
                           backgroundColor: const Color(0xFF2A2A2A),
@@ -180,10 +249,10 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       const SizedBox(height: 12),
 
-                      // Password
                       LiquidEffect(
+                        autoBounce: true,
                         child: GlowTextField(
-                          label: "Enter Password",
+                          label: "Password",
                           icon: Icons.lock,
                           controller: passwordController,
                           backgroundColor: const Color(0xFF2A2A2A),
@@ -195,6 +264,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                       // Sign Up Button
                       LiquidEffect(
+                        autoBounce: true,
                         child: LiquidButton(
                           width: double.infinity,
                           height: 50,
@@ -215,35 +285,6 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Bottom Link
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            "Already have an account? ",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          LiquidEffect(
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (_) => const LoginPage()),
-                                );
-                              },
-                              child: const Text(
-                                "Sign In",
-                                style: TextStyle(
-                                  color: Color(0xFFFFDD33),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),
@@ -275,6 +316,30 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0F0F0F),
+      persistentFooterButtons: [
+        LiquidEffect(
+          autoBounce: true,
+          child: Row(
+            children: [
+              InkWell(
+                onTap: () => Navigator.pop(context),
+                child: const Text(
+                  "Don't have an account?",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+              const Spacer(),
+              InkWell(
+                onTap: () => debugPrint("Forget password clicked"),
+                child: const Text(
+                  "Forget password",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
       body: Stack(
         children: [
           const Positioned.fill(child: ParticleScene()),
@@ -306,21 +371,36 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        "Welcome Back",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                      // Top Row: Login + Forward Icon
+                      LiquidEffect(
+                        autoBounce: true,
+                        child: Row(
+                          children: [
+                            const Text(
+                              "Login",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const Spacer(),
+                            LiquidEffect(
+                              child: IconButton(
+                                icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                                onPressed: () {},
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 20),
 
-                      // Email
+                      // TextFields
                       LiquidEffect(
+                        autoBounce: true,
                         child: GlowTextField(
-                          label: "Enter Email",
+                          label: "Email",
                           icon: Icons.email,
                           controller: emailController,
                           backgroundColor: const Color(0xFF2A2A2A),
@@ -330,10 +410,10 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 12),
 
-                      // Password
                       LiquidEffect(
+                        autoBounce: true,
                         child: GlowTextField(
-                          label: "Enter Password",
+                          label: "Password",
                           icon: Icons.lock,
                           controller: passwordController,
                           backgroundColor: const Color(0xFF2A2A2A),
@@ -345,6 +425,7 @@ class _LoginPageState extends State<LoginPage> {
 
                       // Sign In Button
                       LiquidEffect(
+                        autoBounce: true,
                         child: LiquidButton(
                           width: double.infinity,
                           height: 50,
@@ -365,32 +446,6 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Bottom Links
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          LiquidEffect(
-                            child: InkWell(
-                              onTap: () => Navigator.pop(context),
-                              child: const Text(
-                                "Don't have an account?",
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ),
-                          ),
-                          LiquidEffect(
-                            child: InkWell(
-                              onTap: () => debugPrint("Forget password clicked"),
-                              child: const Text(
-                                "Forget password",
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),

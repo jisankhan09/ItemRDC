@@ -18,7 +18,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       body: Stack(
         children: [
-          /// 🔥 Background image (glass effect আরও সুন্দর হবে)
+          /// 🔥 Background image
           Positioned.fill(
             child: Image.network(
               'https://images.unsplash.com/photo-1685330972883-66b9c5e7d8e3?auto=format&fit=crop&w=800&q=80',
@@ -43,6 +43,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
+              borderGradient: LinearGradient(
+                colors: [Colors.transparent, Colors.transparent],
+              ),
             ),
           ),
 
@@ -65,10 +68,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 end: Alignment.bottomRight,
               ),
               borderGradient: LinearGradient(
-                colors: [
-                  Colors.white.withOpacity(0.5),
-                  Colors.white.withOpacity(0.5),
-                ],
+                colors: [Colors.white.withOpacity(0.5), Colors.white.withOpacity(0.5)],
               ),
               child: const Center(
                 child: Text(

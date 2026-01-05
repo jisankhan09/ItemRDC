@@ -144,14 +144,15 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Row(
             children: [
               InkWell(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginPage()),
-                child: const Text(
-                  "Already have an account?",
-                  style: TextStyle(color: Colors.grey),
-                ),
-              )),
+  onTap: () => Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) => const LoginPage()),
+  ),
+  child: const Text(
+    "Already have an account?",
+    style: TextStyle(color: Colors.grey),
+  ),
+),
               const Spacer(),
               InkWell(
                 onTap: () {

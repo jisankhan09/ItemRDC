@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'DrawBackdropModifier.dart';
-import 'backdrops/LayerBackdrop.dart';
-import 'backdrops/LayerBackdropModifier.dart';
-import 'effects/Blur.dart';
-import 'effects/Lens.dart';
-import 'highlight/Highlight.dart';
-import 'shadow/Shadow.dart';
+import 'package:backdrop/DrawBackdropModifier.dart'; // package:backdrop ব্যবহার করুন
+import 'package:backdrop/backdrops/LayerBackdrop.dart';
+import 'package:backdrop/backdrops/LayerBackdropModifier.dart';
+import 'package:backdrop/effects/Blur.dart';
+import 'package:backdrop/effects/Lens.dart';
+import 'package:backdrop/highlight/Highlight.dart';
+import 'package:backdrop/shadow/Shadow.dart';
+
 
 void main() {
   runApp(const MaterialApp(

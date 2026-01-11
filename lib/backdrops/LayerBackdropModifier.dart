@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/rendering.dart';
 import 'LayerBackdrop.dart';
@@ -28,10 +27,10 @@ class RenderLayerBackdropModifier extends RenderProxyBox {
 
   RenderLayerBackdropModifier({
     required LayerBackdrop backdrop,
-  }) : _backdrop = backdrop {
-    // Force this render object to have its own layer so we can capture it
-    isRepaintBoundary = true;
-  }
+  }) : _backdrop = backdrop;
+
+  @override
+  bool get isRepaintBoundary => true;
 
   set backdrop(LayerBackdrop value) {
     if (_backdrop != value) {

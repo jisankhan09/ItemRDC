@@ -8,12 +8,13 @@ abstract class HighlightStyle {
   Color get color;
   BlendMode get blendMode;
 
-  Future<FragmentShader?> createShader(
+  FragmentShader? createShader(
     Size size,
     ShapeBorder shape,
     TextDirection layoutDirection,
     double density,
     RuntimeShaderCache runtimeShaderCache,
+    void Function() onShaderLoaded,
   );
 }
 
@@ -29,13 +30,14 @@ class HighlightStylePlain implements HighlightStyle {
   });
 
   @override
-  Future<FragmentShader?> createShader(
+  FragmentShader? createShader(
     Size size,
     ShapeBorder shape,
     TextDirection layoutDirection,
     double density,
     RuntimeShaderCache runtimeShaderCache,
-  ) async => null;
+    void Function() onShaderLoaded,
+  ) => null;
 }
 
 class HighlightStyleDefault implements HighlightStyle {
@@ -54,14 +56,19 @@ class HighlightStyleDefault implements HighlightStyle {
   });
 
   @override
-  Future<FragmentShader?> createShader(
+  FragmentShader? createShader(
     Size size,
     ShapeBorder shape,
     TextDirection layoutDirection,
     double density,
     RuntimeShaderCache runtimeShaderCache,
-  ) async {
-    final program = await runtimeShaderCache.obtainRuntimeShader(Shaders.defaultHighlight);
+    void Function() onShaderLoaded,
+  ) {
+    final program = runtimeShaderCache.getCachedShader(Shaders.defaultHighlight);
+    if (program == null) {
+      runtimeShaderCache.requestShader(Shaders.defaultHighlight, onShaderLoaded);
+      return null;
+    }
     final shader = program.fragmentShader();
     
     final radii = getCornerRadii(shape, size, layoutDirection);
@@ -95,14 +102,19 @@ class HighlightStyleAmbient implements HighlightStyle {
         blendMode = BlendMode.srcOver;
 
   @override
-  Future<FragmentShader?> createShader(
+  FragmentShader? createShader(
     Size size,
     ShapeBorder shape,
     TextDirection layoutDirection,
     double density,
     RuntimeShaderCache runtimeShaderCache,
-  ) async {
-    final program = await runtimeShaderCache.obtainRuntimeShader(Shaders.ambientHighlight);
+    void Function() onShaderLoaded,
+  ) {
+    final program = runtimeShaderCache.getCachedShader(Shaders.ambientHighlight);
+    if (program == null) {
+      runtimeShaderCache.requestShader(Shaders.ambientHighlight, onShaderLoaded);
+      return null;
+    }
     final shader = program.fragmentShader();
 
     final radii = getCornerRadii(shape, size, layoutDirection);

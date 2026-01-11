@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/rendering.dart';
 import 'Highlight.dart';
 import '../ShapeProvider.dart';
+import '../BackdropEffectScope.dart';
 
 class HighlightModifier extends SingleChildRenderObjectWidget {
   final ShapeProvider shapeProvider;
@@ -103,10 +104,17 @@ class RenderHighlightModifier extends RenderProxyBox {
     _effectScope.update(_density, 1.0, size, _direction);
     _effectScope.shape = _shapeProvider.shape;
     
-    // HighlightStyle.createShader is async in my implementation, let's make it sync-compatible too
-    // But since I'm running out of time, I'll just draw the stroke.
-    // The "white line" the user sees is this stroke. 
-    // If it's too distracting, we can adjust.
+    final shader = h.style.createShader(
+      size,
+      _shapeProvider.shape,
+      _direction,
+      _density,
+      _effectScope,
+      _effectScope.onShaderAvailable,
+    );
+    if (shader != null) {
+      paint.shader = shader;
+    }
     
     canvas.drawPath(path, paint);
     canvas.restore();

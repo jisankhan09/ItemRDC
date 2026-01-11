@@ -49,5 +49,5 @@ jobs:
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: itemrdc-arm64-apk
+          name: backdrop-arm64-apk
           path: build/app/outputs/flutter-apk/app-release.apk

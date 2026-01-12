@@ -39,7 +39,7 @@ jobs:
 
       # 5️⃣ Build Web (optimized flags)
       - name: Build Web
-        run: flutter build web --release --base-href "/ItemRDC/" --pwa-strategy=none
+        run: flutter build web --release --no-tree-shake-icons --base-href "/ItemRDC/" --pwa-strategy=none
 
       # 6️⃣ Deploy to GitHub Pages (incremental)
       - name: Deploy to GitHub Pages

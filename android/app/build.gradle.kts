@@ -6,6 +6,7 @@ plugins {
 }
 
 android {
+<<<<<<< HEAD
     namespace = "com.vault.backdrop"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
@@ -17,11 +18,28 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
+=======
+    namespace = "com.example.flutter_ide"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = "27.1.12297006"
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.toString()
+>>>>>>> b33448e (Build Web)
     }
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+<<<<<<< HEAD
         applicationId = "com.vault.backdrop"
+=======
+        applicationId = "com.example.flutter_ide"
+>>>>>>> b33448e (Build Web)
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

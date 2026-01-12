@@ -1,6 +1,11 @@
 {
+<<<<<<< HEAD
     "name": "itemrdcv2",
     "short_name": "itemrdcv2",
+=======
+    "name": "flutter_ide",
+    "short_name": "flutter_ide",
+>>>>>>> b33448e (Build Web)
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

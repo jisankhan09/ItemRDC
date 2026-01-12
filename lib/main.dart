@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter_ide/finder.dart';
 import 'package:path/path.dart' as p;
-import 'package:code_forge/code_forge.dart';
+import 'package:flutter_ide/code_forge.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:re_highlight/languages/dart.dart';

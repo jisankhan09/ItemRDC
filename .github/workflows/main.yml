@@ -1,4 +1,4 @@
-name: Flutter Android APK Build
+name: Flutter Windows Build
 
 on:
   push:
@@ -8,46 +8,44 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-      # 1️⃣ Checkout repository
+      # 1️⃣ Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Java (Android build requires Java 11)
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      # 3️⃣ Setup Flutter SDK
+      # 2️⃣ Setup Flutter SDK
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.38.6"
           cache: true
 
-      # 4️⃣ Flutter dependencies
+      # 3️⃣ Enable Windows desktop
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+
+      # 4️⃣ Create Windows folder (if missing)
+      - name: Create Windows platform
+        run: flutter create --platforms=windows .
+
+      # 5️⃣ Install dependencies
       - name: Install dependencies
         run: flutter pub get
-        working-directory: ./
 
-      # 5️⃣ Analyze project (optional but recommended)
+      # 6️⃣ Analyze (optional)
       - name: Analyze project
         run: flutter analyze
-        working-directory: ./
         continue-on-error: true
 
-      # 6️⃣ Build Release APK for arm64-v8a only
-      - name: Build Release APK (arm64-v8a)
-        run: flutter build apk --release --no-tree-shake-icons --target-platform android-arm64
-        working-directory: ./
+      # 7️⃣ Build Windows release
+      - name: Build Windows App
+        run: flutter build windows --release
 
-      # 7️⃣ Upload APK as artifact
-      - name: Upload Release APK
+      # 8️⃣ Upload Windows build
+      - name: Upload Windows Build
         uses: actions/upload-artifact@v4
         with:
-          name: backdrop-arm64-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: windows-build
+          path: build/windows/x64/runner/Release/

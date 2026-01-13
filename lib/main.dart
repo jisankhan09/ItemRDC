@@ -89,7 +89,7 @@ class _MyAppState extends State<MyApp> {
       return null;
     }
   }
-
+  final editorFocusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -126,6 +126,8 @@ class _MyAppState extends State<MyApp> {
                     undoController: undoController,
                     filePath: absFilePath,
                     language: langDart,
+                    focusNode: editorFocusNode,
+                    autoFocus: true,
                     editorTheme: atomOneDarkReasonableTheme,
                     textStyle: GoogleFonts.jetBrainsMono(fontSize: 14),
                     finderBuilder: (c, controller) =>

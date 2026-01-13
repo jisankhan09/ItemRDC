@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # 6️⃣ Analyze (optional)
+      # 6️⃣ Analyze 
       - name: Analyze project
         run: flutter analyze
         continue-on-error: true

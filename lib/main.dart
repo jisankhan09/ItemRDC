@@ -49,8 +49,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  /// 🔴 Windows এ dart language-server প্রায়ই পাওয়া যায় না
-  /// তাই try-catch + nullable LSP
+  /// LSP init
   Future<LspConfig?> getLsp() async {
     try {
       debugPrint("🚀 Starting Dart LSP...");
@@ -67,8 +66,19 @@ class _MyAppState extends State<MyApp> {
     } catch (e, st) {
       debugPrint("❌ LSP FAILED: $e");
       debugPrint(st.toString());
-      return null; // IMPORTANT
+      return null;
     }
+  }
+
+  /// Snackbar helper
+  void showSnackBar(BuildContext context, String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   @override
@@ -94,33 +104,46 @@ class _MyAppState extends State<MyApp> {
               }
 
               if (snapshot.hasError) {
-                return Center(
-                  child: Text("Error: ${snapshot.error}"),
-                );
+                // LSP init error
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showSnackBar(context, "LSP Error: ${snapshot.error}", isError: true);
+                });
+                return const Center(child: Text("Error loading LSP"));
               }
 
-              /// LSP থাকুক বা না থাকুক editor চলবে
               codeController ??= CodeForgeController(
                 lspConfig: snapshot.data,
+                readOnly: false, // typing enable
               );
 
-              return CodeForge(
-                controller: codeController,
-                undoController: undoController,
-                filePath: absFilePath,
-                language: langDart,
-                editorTheme: atomOneDarkReasonableTheme,
-                textStyle: GoogleFonts.jetBrainsMono(
-                  fontSize: 14,
-                ),
-                finderBuilder: (c, controller) =>
-                    FindPanelView(controller: controller),
-                matchHighlightStyle: const MatchHighlightStyle(
-                  currentMatchStyle: TextStyle(
-                    backgroundColor: Color(0xFFFFA726),
-                  ),
-                  otherMatchStyle: TextStyle(
-                    backgroundColor: Color(0x55FFFF00),
+              // 🔹 Listen to diagnostics/errors
+              codeController!.onDiagnosticsChanged.listen((diagnostics) {
+                for (final diag in diagnostics) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    showSnackBar(context, "${diag.severity}: ${diag.message}",
+                        isError: diag.severity == DiagnosticSeverity.error);
+                  });
+                }
+              });
+
+              return Focus(
+                autofocus: true,
+                child: CodeForge(
+                  controller: codeController,
+                  undoController: undoController,
+                  filePath: absFilePath,
+                  language: langDart,
+                  editorTheme: atomOneDarkReasonableTheme,
+                  textStyle: GoogleFonts.jetBrainsMono(fontSize: 14),
+                  finderBuilder: (c, controller) =>
+                      FindPanelView(controller: controller),
+                  matchHighlightStyle: const MatchHighlightStyle(
+                    currentMatchStyle: TextStyle(
+                      backgroundColor: Color(0xFFFFA726),
+                    ),
+                    otherMatchStyle: TextStyle(
+                      backgroundColor: Color(0x55FFFF00),
+                    ),
                   ),
                 ),
               );

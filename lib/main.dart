@@ -24,7 +24,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final undoController = UndoRedoController();
-
   CodeForgeController? codeController;
   late final String absFilePath;
 
@@ -32,7 +31,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    /// Windows debug path check
+    /// Current working directory
     final baseDir = Directory.current.path;
     debugPrint("📂 Current dir: $baseDir");
 
@@ -50,35 +49,45 @@ class _MyAppState extends State<MyApp> {
   }
 
   /// LSP init
-  Future<LspConfig?> getLsp() async {
+  Future<LspConfig?> getLsp(BuildContext context) async {
     try {
       debugPrint("🚀 Starting Dart LSP...");
-
       final data = await LspStdioConfig.start(
         executable: "dart",
         args: ["language-server", "--protocol=lsp"],
         workspacePath: Directory.current.path,
         languageId: "dart",
       );
-
       debugPrint("✅ LSP started");
+
+      // Snackbar for success
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("✅ LSP started successfully"),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      });
+
       return data;
-    } catch (e, st) {
+    } catch (e) {
       debugPrint("❌ LSP FAILED: $e");
-      debugPrint(st.toString());
+
+      // Snackbar for error
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("❌ LSP failed: $e"),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      });
+
       return null;
     }
-  }
-
-  /// Snackbar helper
-  void showSnackBar(BuildContext context, String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
-        duration: const Duration(seconds: 2),
-      ),
-    );
   }
 
   @override
@@ -96,59 +105,44 @@ class _MyAppState extends State<MyApp> {
           },
         ),
         body: SafeArea(
-          child: FutureBuilder<LspConfig?>(
-            future: getLsp(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (snapshot.hasError) {
-                // LSP init error
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showSnackBar(context, "LSP Error: ${snapshot.error}", isError: true);
-                });
-                return const Center(child: Text("Error loading LSP"));
-              }
-
-              codeController ??= CodeForgeController(
-                lspConfig: snapshot.data,
-                readOnly: false, // typing enable
-              );
-
-              // 🔹 Listen to diagnostics/errors
-              codeController!.onDiagnosticsChanged.listen((diagnostics) {
-                for (final diag in diagnostics) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    showSnackBar(context, "${diag.severity}: ${diag.message}",
-                        isError: diag.severity == DiagnosticSeverity.error);
-                  });
+          child: Builder(builder: (context) {
+            // Builder needed for ScaffoldMessenger
+            return FutureBuilder<LspConfig?>(
+              future: getLsp(context),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
                 }
-              });
 
-              return Focus(
-                autofocus: true,
-                child: CodeForge(
-                  controller: codeController,
-                  undoController: undoController,
-                  filePath: absFilePath,
-                  language: langDart,
-                  editorTheme: atomOneDarkReasonableTheme,
-                  textStyle: GoogleFonts.jetBrainsMono(fontSize: 14),
-                  finderBuilder: (c, controller) =>
-                      FindPanelView(controller: controller),
-                  matchHighlightStyle: const MatchHighlightStyle(
-                    currentMatchStyle: TextStyle(
-                      backgroundColor: Color(0xFFFFA726),
-                    ),
-                    otherMatchStyle: TextStyle(
-                      backgroundColor: Color(0x55FFFF00),
+                // LSP fail or succeed doesn't block editor
+                codeController ??= CodeForgeController(
+                  lspConfig: snapshot.data,
+                );
+
+                return Focus(
+                  autofocus: true,
+                  child: CodeForge(
+                    controller: codeController,
+                    undoController: undoController,
+                    filePath: absFilePath,
+                    language: langDart,
+                    editorTheme: atomOneDarkReasonableTheme,
+                    textStyle: GoogleFonts.jetBrainsMono(fontSize: 14),
+                    finderBuilder: (c, controller) =>
+                        FindPanelView(controller: controller),
+                    matchHighlightStyle: const MatchHighlightStyle(
+                      currentMatchStyle: TextStyle(
+                        backgroundColor: Color(0xFFFFA726),
+                      ),
+                      otherMatchStyle: TextStyle(
+                        backgroundColor: Color(0x55FFFF00),
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
-          ),
+                );
+              },
+            );
+          }),
         ),
       ),
     );
